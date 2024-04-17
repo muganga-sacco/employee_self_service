@@ -35,6 +35,7 @@ def get_order_list(start=0, page_length=10, filters=None):
             "Sales Order",
             fields=[
                 "name",
+                "customer",
                 "customer_name",
                 "DATE_FORMAT(transaction_date, '%d-%m-%Y') as transaction_date",
                 "grand_total",
@@ -87,6 +88,7 @@ def get_order(*args, **kwargs):
         )
         for response_field in [
             "name",
+            "customer",
             "transaction_date",
             "delivery_date",
             "workflow_state",
