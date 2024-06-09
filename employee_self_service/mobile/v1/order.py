@@ -98,6 +98,8 @@ def get_order(*args, **kwargs):
             "contact_email",
             "contact_mobile",
             "contact_phone",
+            "cost_center",
+            "company",
         ]:
             order_data[response_field] = order_doc.get(response_field)
         item_list = []
@@ -224,21 +226,23 @@ def get_items_rate(items):
         item["rate"] = item_price[0].price_list_rate if item_price else 0.0
     return items
 
+
 @frappe.whitelist()
 def scan_item(barcode):
     try:
         from erpnext.stock.utils import scan_barcode
+
         item_details = scan_barcode(barcode)
         item_list = frappe.get_list(
             "Item",
-            filters={"name":item_details.get("item_code")},
+            filters={"name": item_details.get("item_code")},
             fields=["name", "item_name", "item_code", "image"],
         )
         items = get_items_rate(item_list)
         if len(items) >= 1:
             gen_response(200, "Item list get successfully", items[0])
         else:
-            gen_response(500,"Item does not exists")
+            gen_response(500, "Item does not exists")
     except Exception as e:
         return exception_handler(e)
 
