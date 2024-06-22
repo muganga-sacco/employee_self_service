@@ -193,11 +193,13 @@ def get_customer_list(start=0, page_length=10, filters=None):
 
 @frappe.whitelist()
 @ess_validate(methods=["GET"])
-def get_item_list():
+def get_item_list(filters=None):
     try:
+        if not filters:
+            filters = []
+        filters.append(["Item", "show_in_mobile", "=", 1])
         item_list = frappe.get_list(
-            "Item",
-            fields=["name", "item_name", "item_code", "image"],
+            "Item", fields=["name", "item_name", "item_code", "image"], filters=filters
         )
         items = get_items_rate(item_list)
         gen_response(200, "Item list get successfully", items)
@@ -355,3 +357,20 @@ def _create_update_order(data, sales_order_doc, default_warehouse):
     sales_order_doc.run_method("set_missing_values")
     sales_order_doc.run_method("calculate_taxes_and_totals")
     sales_order_doc.save()
+
+
+@frappe.whitelist()
+@ess_validate(methods=["GET", "POST"])
+def get_item_group_list(filters=None):
+    try:
+        if not filters:
+            filters = []
+        filters.append(["Item Group", "show_in_mobile", "=", 1])
+        item_group_list = frappe.get_list(
+            "Item Group", fields=["name"], filters=filters
+        )
+        gen_response(200, "Item group list get successfully", item_group_list)
+    except frappe.PermissionError:
+        return gen_response(500, "Not permitted for item")
+    except Exception as e:
+        return exception_handler(e)
