@@ -29,7 +29,7 @@ from employee_self_service.mobile.api_utils import (
     exception_handel,
 )
 
-from erpnext.accounts.utils import get_fiscal_year
+# from erpnext.accounts.utils import get_fiscal_year
 
 from employee_self_service.employee_self_service.doctype.push_notification.push_notification import (
     create_push_notification,
@@ -142,35 +142,35 @@ def get_leave_application_list():
             fields=leave_application_fields,
             filters={"from_date": ["<=", today()], "employee": emp_data.get("name")},
         )
-        fiscal_year = get_fiscal_year(nowdate())[0]
-        if not fiscal_year:
-            return gen_response(500, "Fiscal year not set")
-        res = get_leave_balance_report(
-            emp_data.get("name"), emp_data.get("company"), fiscal_year
-        )
+        # fiscal_year = get_fiscal_year(nowdate())[0]
+        # if not fiscal_year:
+        #     return gen_response(500, "Fiscal year not set")
+        # res = get_leave_balance_report(
+        #     emp_data.get("name"), emp_data.get("company"), fiscal_year
+        # )
         leave_applications = {
             "upcoming": upcoming_leaves,
             "taken": taken_leaves,
-            "balance": res["result"],
+            # "balance": res["result"],
         }
         return gen_response(200, "leave data getting successfully", leave_applications)
     except Exception as e:
         return exception_handel(e)
 
 
-def get_leave_balance_report(employee, company, fiscal_year):
-    fiscal_year = get_fiscal_year(fiscal_year=fiscal_year, as_dict=True)
-    year_start_date = get_date_str(fiscal_year.get("year_start_date"))
-    year_end_date = get_date_str(fiscal_year.get("year_end_date"))
-    filters_leave_balance = {
-        "from_date": year_start_date,
-        "to_date": year_end_date,
-        "company": company,
-        "employee": employee,
-    }
-    from frappe.desk.query_report import run
+# def get_leave_balance_report(employee, company, fiscal_year):
+#     fiscal_year = get_fiscal_year(fiscal_year=fiscal_year, as_dict=True)
+#     year_start_date = get_date_str(fiscal_year.get("year_start_date"))
+#     year_end_date = get_date_str(fiscal_year.get("year_end_date"))
+#     filters_leave_balance = {
+#         "from_date": year_start_date,
+#         "to_date": year_end_date,
+#         "company": company,
+#         "employee": employee,
+#     }
+#     from frappe.desk.query_report import run
 
-    return run("Employee Leave Balance", filters=filters_leave_balance)
+#     return run("Employee Leave Balance", filters=filters_leave_balance)
 
 
 @frappe.whitelist()
@@ -407,19 +407,19 @@ def get_dashboard():
 
 
 @frappe.whitelist()
-def get_leave_balance_dashboard():
-    try:
-        emp_data = get_employee_by_user(frappe.session.user, fields=["name", "company"])
-        fiscal_year = get_fiscal_year(nowdate())[0]
-        dashboard_data = {"leave_balance": []}
-        if fiscal_year:
-            res = get_leave_balance_report(
-                emp_data.get("name"), emp_data.get("company"), fiscal_year
-            )
-            dashboard_data["leave_balance"] = res["result"]
-        return gen_response(200, "Leave Balance data get successfully", dashboard_data)
-    except Exception as e:
-        return exception_handel(e)
+# def get_leave_balance_dashboard():
+#     try:
+#         emp_data = get_employee_by_user(frappe.session.user, fields=["name", "company"])
+#         fiscal_year = get_fiscal_year(nowdate())[0]
+#         dashboard_data = {"leave_balance": []}
+#         if fiscal_year:
+#             res = get_leave_balance_report(
+#                 emp_data.get("name"), emp_data.get("company"), fiscal_year
+#             )
+#             dashboard_data["leave_balance"] = res["result"]
+#         return gen_response(200, "Leave Balance data get successfully", dashboard_data)
+#     except Exception as e:
+#         return exception_handel(e)
 
 
 @frappe.whitelist()
